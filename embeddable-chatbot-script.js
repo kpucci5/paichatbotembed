@@ -596,7 +596,7 @@
         if (chatWidget.classList.contains('pai-chat-open')) {
             chatInitiator.style.opacity = '0';
             if (!initialMessageSent) {
-                addAIMessage(`Hi, I'm ${config.chatbotName}, how can I help you?`);
+                addAIMessage(config.initialQuestion || `Hi, I'm ${config.chatbotName}, how can I help you?`);
                 initialMessageSent = true;
             }
             
@@ -606,7 +606,7 @@
             } else {
                 existingUserInput.focus();
             }
-
+    
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
