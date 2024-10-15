@@ -12,6 +12,6 @@
       sendButtonColor: '#FF5733', // Custom color for the send button
       messageIconColor: '#33FF57', // Custom color for the message icon
       initiatorPosition: 'top-right', // Can be 'top-left', 'top-right', 'bottom-left', or 'bottom-right'
-      initialQuestion: "What would you like to know about our products?" // This is the first message displayed by the AI in the chatbot window
+      initialQuestion: 'What would you like to know about our products?' // This is the first message displayed by the AI in the chatbot window
     });
   });
