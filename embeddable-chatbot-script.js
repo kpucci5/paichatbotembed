@@ -1,7 +1,5 @@
 (function() {
-// Function to initialize the chatbot - Do Not Touch
     window.initPersonalAIChatbot = function(config) {
-// Use provided config or fallback to defaults - Do Not Touch
         config = {
             apiKey: config.apiKey,
             domainName: config.domainName,
@@ -14,7 +12,6 @@
             initiatorPosition: config.initiatorPosition,
         };
 
-// Determine the position CSS based on the initiatorPosition - Adjust this based on your website
         let positionCSS;
         switch (config.initiatorPosition) {
             case 'top-left':
@@ -32,7 +29,6 @@
                 break;
         }
 
-// Create and append styles - No need to adjust this
         const style = document.createElement('style');
         style.textContent = `
             @import url('https://fonts.googleapis.com/css?family=Inter');
@@ -176,6 +172,7 @@
                 transition: all 0.3s ease-in-out;
                 opacity: 0;
                 animation: fadeIn 2s ease forwards;
+                max-height: 90vh;
             }
 
             .pai-chat-open .pai-chat-window,
@@ -224,12 +221,16 @@
             }
 
             .pai-chat-messages {
-                flex-grow: 1;
+                flex: 1 1 auto;
                 overflow-y: auto;
                 padding: 10px;
                 background-color: transparent;
                 scrollbar-width: thin;
                 scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+                height: calc(100% - 180px);
+                min-height: 200px;
+                display: flex;
+                flex-direction: column;
             }
 
             .pai-chat-messages::-webkit-scrollbar {
@@ -250,6 +251,7 @@
                 align-items: flex-start;
                 margin-bottom: 15px;
                 max-width: 80%;
+                flex-shrink: 0;
             }
 
             .pai-chat-message.ai {
@@ -324,6 +326,10 @@
                 display: flex;
                 align-items: center;
                 padding-right: 40px;
+                min-height: 60px;
+                background: #fff;
+                border-top: 1px solid #EFF0F6;
+                margin-top: auto;
             }
 
             .pai-chat-input {
@@ -395,7 +401,6 @@
                 100% { transform: translateY(0px); }
             }
 
-            /* Responsive styles */
             @media (min-width: 992px) {
                 .pai-chat-initiator {
                     flex-direction: row;
@@ -446,11 +451,15 @@
 
                 .pai-chat-window {
                     width: 95%;
-                    height: 90%;
-                    max-height: none;
+                    height: 90vh;
+                    max-height: 90vh;
                     top: 5%;
                     left: 2.5%;
                     transform: none;
+                }
+
+                .pai-chat-messages {
+                    height: calc(100% - 200px);
                 }
 
                 .pai-chat-header {
@@ -459,24 +468,6 @@
 
                 .pai-chat-close {
                     top: 20px;
-                }
-
-                .pai-chat-messages {
-                    height: calc(100% - 150px);
-                }
-
-                .pai-chat-input {
-                    font-size: 14px;
-                    padding: 10px;
-                    min-height: 45px;
-                }
-
-                .pai-chat-input-wrapper {
-                    padding: 15px;
-                }
-
-                .pai-chat-message.user .pai-chat-message-content {
-                    max-width: calc(100% - 30px);
                 }
             }
 
@@ -491,10 +482,15 @@
 
                 .pai-chat-window {
                     width: 100%;
-                    height: 100%;
+                    height: 100vh;
+                    max-height: 100vh;
                     top: 0;
                     left: 0;
                     border-radius: 0;
+                }
+
+                .pai-chat-messages {
+                    height: calc(100% - 220px);
                 }
 
                 .pai-chat-header {
@@ -522,283 +518,300 @@
         `;
         document.head.appendChild(style);
 
-        // Create and append HTML
         const chatWidgetHtml = `
             <div id="personal-ai-chat-widget" class="pai-chat-closed">
                 <div class="pai-chat-initiator">
-                <div class="pai-chat-avatar-wrapper">
-                    <img src="${config.aiAvatarUrl}" alt="AI Avatar" class="pai-chat-avatar">
-                </div>
-                <div class="pai-chat-bubble-wrapper">
-                    <div class="pai-chat-bubble">
-                        <span class="pai-chat-text" id="ai-initial-message"></span>
+                    <div class="pai-chat-avatar-wrapper">
+                        <img src="${config.aiAvatarUrl}" alt="AI Avatar" class="pai-chat-avatar">
                     </div>
-                    <div class="pai-chat-message-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                        </svg>
+                    <div class="pai-chat-bubble-wrapper">
+                        <div class="pai-chat-bubble">
+                            <span class="pai-chat-text" id="ai-initial-message"></span>
+                        </div>
+                        <div class="pai-chat-message-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <button class="pai-chat-initiator-close">&times;</button>
                     </div>
-                    <button class="pai-chat-initiator-close">&times;</button>
                 </div>
-            </div>
-            <div class="pai-chat-overlay"></div>
-            <div class="pai-chat-window">
-                <div class="pai-chat-header">
-                    <div class="pai-chat-header-content">
-                        <img src="${config.aiAvatarUrl}" alt="AI Avatar" class="pai-chat-avatar-header">
-                        <span class="pai-chat-title">Chat with ${config.chatbotName}</span>
+                <div class="pai-chat-overlay"></div>
+                <div class="pai-chat-window">
+                    <div class="pai-chat-header">
+                        <div class="pai-chat-header-content">
+                            <img src="${config.aiAvatarUrl}" alt="AI Avatar" class="pai-chat-avatar-header">
+                            <span class="pai-chat-title">Chat with ${config.chatbotName}</span>
+                        </div>
+                        <button class="pai-chat-close">&times;</button>
                     </div>
-                    <button class="pai-chat-close">&times;</button>
-                </div>
-                <div class="pai-chat-messages"></div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', chatWidgetHtml);
-
-    // Initialize chatbot functionality
-    const chatWidget = document.getElementById('personal-ai-chat-widget');
-    const chatInitiator = chatWidget.querySelector('.pai-chat-initiator');
-    const chatWindow = chatWidget.querySelector('.pai-chat-window');
-    const chatOverlay = chatWidget.querySelector('.pai-chat-overlay');
-    const chatClose = chatWidget.querySelector('.pai-chat-close');
-    const chatMessages = chatWidget.querySelector('.pai-chat-messages');
-    const aiInitialMessage = document.getElementById('ai-initial-message');
-    const messageIcon = chatWidget.querySelector('.pai-chat-message-icon');
-    const initiatorCloseButton = chatWidget.querySelector('.pai-chat-initiator-close');
-
-    let sessionId = null;
-    let initialMessageSent = false;
-
-    function typeMessage(targetElement, message, callback) {
-        let index = 0;
-        function typeChar() {
-            if (index < message.length) {
-                targetElement.textContent += message.charAt(index);
-                index++;
-                setTimeout(typeChar, 20);
-            } else {
-                if (callback) callback();
-            }
-        }
-        typeChar();
-    }
-
-    function typeInitialMessage() {
-        typeMessage(aiInitialMessage, config.initialMessage, function() {
-            messageIcon.classList.add('fade-in');
-            initiatorCloseButton.classList.add('fade-in');
-        });
-    }
-
-    function toggleChat() {
-        chatWidget.classList.toggle('pai-chat-open');
-        if (chatWidget.classList.contains('pai-chat-open')) {
-            chatInitiator.style.opacity = '0';
-            if (!initialMessageSent) {
-                addAIMessage(config.initialQuestion || `Hi, I'm ${config.chatbotName}, how can I help you?`);
-                initialMessageSent = true;
-            }
-            
-            const existingUserInput = chatMessages.querySelector('.pai-chat-message.user:last-child .pai-chat-input');
-            if (!existingUserInput) {
-                addUserInputBubble();
-            } else {
-                existingUserInput.focus();
-            }
-    
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-            setTimeout(() => {
-                chatInitiator.style.opacity = '1';
-            }, 300);
-        }
-    }
-
-    function getCurrentTime() {
-        const now = new Date();
-        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function addAIMessage(message) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('pai-chat-message', 'ai');
-        
-        const time = getCurrentTime();
-        
-        messageElement.innerHTML = `
-            <img src="${config.aiAvatarUrl}" alt="AI Avatar" class="pai-chat-message-avatar">
-            <div class="pai-chat-message-content">
-                <div class="pai-chat-message-header">
-                    <span class="pai-chat-message-name">${config.chatbotName}</span>
-                    <span class="pai-chat-message-time">${time}</span>
-                </div>
-                <div class="pai-chat-message-text">${message}</div>
-            </div>
-        `;
-        
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function addUserInputBubble() {
-        const inputBubble = document.createElement('div');
-        inputBubble.classList.add('pai-chat-message', 'user');
-        inputBubble.innerHTML = `
-            <img src="${config.userAvatarUrl}" alt="User Avatar" class="pai-chat-message-avatar">
-            <div class="pai-chat-message-content">
-                <div class="pai-chat-message-header">
-                    <span class="pai-chat-message-name">You</span>
-                    <span class="pai-chat-message-time">${getCurrentTime()}</span>
-                </div>
-                <div class="pai-chat-input-wrapper">
-                    <textarea class="pai-chat-input" rows="1" placeholder="Type your message..."></textarea>
-                    <button class="pai-chat-send-inline">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                        </svg>
-                    </button>
+                    <div class="pai-chat-messages"></div>
                 </div>
             </div>
         `;
-        chatMessages.appendChild(inputBubble);
-        
-        const textarea = inputBubble.querySelector('.pai-chat-input');
-        const sendButton = inputBubble.querySelector('.pai-chat-send-inline');
-        
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        });
-        
-        textarea.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage(this.value);
+        document.body.insertAdjacentHTML('beforeend', chatWidgetHtml);
+
+        const chatWidget = document.getElementById('personal-ai-chat-widget');
+        const chatInitiator = chatWidget.querySelector('.pai-chat-initiator');
+        const chatWindow = chatWidget.querySelector('.pai-chat-window');
+        const chatOverlay = chatWidget.querySelector('.pai-chat-overlay');
+        const chatClose = chatWidget.querySelector('.pai-chat-close');
+        const chatMessages = chatWidget.querySelector('.pai-chat-messages');
+        const aiInitialMessage = document.getElementById('ai-initial-message');
+        const messageIcon = chatWidget.querySelector('.pai-chat-message-icon');
+        const initiatorCloseButton = chatWidget.querySelector('.pai-chat-initiator-close');
+
+        let sessionId = null;
+        let initialMessageSent = false;
+
+        function typeMessage(targetElement, message, callback) {
+            let index = 0;
+            function typeChar() {
+                if (index < message.length) {
+                    targetElement.textContent += message.charAt(index);
+                    index++;
+                    setTimeout(typeChar, 20);
+                } else {
+                    if (callback) callback();
+                }
             }
-        });
-        
-        sendButton.addEventListener('click', function() {
-            sendMessage(textarea.value);
-        });
-        
-        function focusInput() {
-            textarea.focus();
-            setTimeout(() => {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 100);
+            typeChar();
         }
 
-        setTimeout(focusInput, 0);
-        window.addEventListener('resize', focusInput);
-    }
+        function typeInitialMessage() {
+            typeMessage(aiInitialMessage, config.initialMessage, function() {
+                messageIcon.classList.add('fade-in');
+                initiatorCloseButton.classList.add('fade-in');
+            });
+        }
 
-    async function sendMessage(message) {
-        if (message.trim()) {
-            const userMessageElement = chatMessages.querySelector('.pai-chat-message.user:last-child');
-            userMessageElement.querySelector('.pai-chat-input-wrapper').style.display = 'none';
-            userMessageElement.querySelector('.pai-chat-message-content').insertAdjacentHTML('beforeend', `<div class="pai-chat-message-text">${message}</div>`);
+        function toggleChat() {
+            chatWidget.classList.toggle('pai-chat-open');
+            if (chatWidget.classList.contains('pai-chat-open')) {
+                chatInitiator.style.opacity = '0';
+                if (!initialMessageSent) {
+                    addAIMessage(config.initialQuestion || `Hi, I'm ${config.chatbotName}, how can I help you?`);
+                    initialMessageSent = true;
+                }
+                
+                const existingUserInput = chatMessages.querySelector('.pai-chat-message.user:last-child .pai-chat-input');
+                if (!existingUserInput) {
+                    addUserInputBubble();
+                } else {
+                    existingUserInput.focus();
+                }
+        
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    chatInitiator.style.opacity = '1';
+                }, 300);
+            }
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function addAIMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('pai-chat-message', 'ai');
             
-            const aiMessageElement = document.createElement('div');
-            aiMessageElement.classList.add('pai-chat-message', 'ai');
             const time = getCurrentTime();
             
-            aiMessageElement.innerHTML = `
+            messageElement.innerHTML = `
                 <img src="${config.aiAvatarUrl}" alt="AI Avatar" class="pai-chat-message-avatar">
                 <div class="pai-chat-message-content">
                     <div class="pai-chat-message-header">
                         <span class="pai-chat-message-name">${config.chatbotName}</span>
                         <span class="pai-chat-message-time">${time}</span>
                     </div>
-                    <div class="pai-chat-message-text">
-                        <div class="pai-chat-typing-indicator">
-                            <span></span><span></span><span></span>
-                        </div>
+                    <div class="pai-chat-message-text">${message}</div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageElement);
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+
+        function addUserInputBubble() {
+            const inputBubble = document.createElement('div');
+            inputBubble.classList.add('pai-chat-message', 'user');
+            inputBubble.innerHTML = `
+                <img src="${config.userAvatarUrl}" alt="User Avatar" class="pai-chat-message-avatar">
+                <div class="pai-chat-message-content">
+                    <div class="pai-chat-message-header">
+                        <span class="pai-chat-message-name">You</span>
+                        <span class="pai-chat-message-time">${getCurrentTime()}</span>
+                    </div>
+                    <div class="pai-chat-input-wrapper">
+                        <textarea class="pai-chat-input" rows="1" placeholder="Type your message..."></textarea>
+                        <button class="pai-chat-send-inline">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             `;
-            chatMessages.appendChild(aiMessageElement);
+            chatMessages.appendChild(inputBubble);
             
-            const aiMessageText = aiMessageElement.querySelector('.pai-chat-message-text');
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            try {
-                const response = await fetch('https://api.personal.ai/v1/message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': config.apiKey
-                    },
-                    body: JSON.stringify({
-                        Text: message,
-                        UserName: "Visitor",
-                        SourceName: "WebChat",
-                        SessionId: sessionId,
-                        DomainName: config.domainName,
-                        is_draft: false
-                    })
+            const textarea = inputBubble.querySelector('.pai-chat-input');
+            const sendButton = inputBubble.querySelector('.pai-chat-send-inline');
+            
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                const newHeight = Math.min(this.scrollHeight, 150);
+                this.style.height = newHeight + 'px';
+                requestAnimationFrame(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
                 });
-
-                const data = await response.json();
-                
-                if (data.ai_message) {
-                    aiMessageText.innerHTML = processMessage(data.ai_message);
-                } else {
-                    aiMessageText.textContent = "Sorry, I couldn't generate a response at this time.";
+            });
+            
+            textarea.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendMessage(this.value);
                 }
-
-                if (data.SessionId) {
-                    sessionId = data.SessionId;
-                }
-
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            } catch (error) {
-                console.error('API Error:', error);
-                aiMessageText.textContent = "Sorry, there was an error processing your request.";
+            });
+            
+            sendButton.addEventListener('click', function() {
+                sendMessage(textarea.value);
+            });
+            
+            function focusInput() {
+                textarea.focus();
+                requestAnimationFrame(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
             }
 
-            addUserInputBubble();
+            setTimeout(focusInput, 100);
+            window.addEventListener('resize', () => {
+                requestAnimationFrame(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+            });
         }
-    }
 
-    function processMessage(message) {
-        const iframeRegex = /<iframe.*?src="(.*?)".*?><\/iframe>/g;
-        message = message.replace(iframeRegex, (match, src) => {
-            return `<iframe src="${src}" frameborder="0" allowfullscreen></iframe>`;
-        });
-    
-        const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)([.,;!?]?)\s*/g;
-        message = message.replace(urlRegex, (fullMatch, url, punctuation) => {
-            const fullUrl = url.startsWith('http') ? url : `http://${url}`;
-            return `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer">${url}</a>${punctuation}`;
-        });
-    
-        const paragraphs = message.split('\n\n');
-        const formattedParagraphs = paragraphs.map(paragraph => {
-            const lines = paragraph.split('\n');
-            return lines.join('<br>');
-        });
-    
-        return formattedParagraphs.map(p => `<p>${p}</p>`).join('');
-    }
-    
-    chatInitiator.addEventListener('click', toggleChat);
-    chatOverlay.addEventListener('click', toggleChat);
-    chatClose.addEventListener('click', toggleChat);
+        async function sendMessage(message) {
+            if (message.trim()) {
+                const userMessageElement = chatMessages.querySelector('.pai-chat-message.user:last-child');
+                userMessageElement.querySelector('.pai-chat-input-wrapper').style.display = 'none';
+                userMessageElement.querySelector('.pai-chat-message-content').insertAdjacentHTML('beforeend', `<div class="pai-chat-message-text">${message}</div>`);
+                
+                const aiMessageElement = document.createElement('div');
+                aiMessageElement.classList.add('pai-chat-message', 'ai');
+                const time = getCurrentTime();
+                
+                aiMessageElement.innerHTML = `
+                    <img src="${config.aiAvatarUrl}" alt="AI Avatar" class="pai-chat-message-avatar">
+                    <div class="pai-chat-message-content">
+                        <div class="pai-chat-message-header">
+                            <span class="pai-chat-message-name">${config.chatbotName}</span>
+                            <span class="pai-chat-message-time">${time}</span>
+                        </div>
+                        <div class="pai-chat-message-text">
+                            <div class="pai-chat-typing-indicator">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(aiMessageElement);
+                
+                const aiMessageText = aiMessageElement.querySelector('.pai-chat-message-text');
+                requestAnimationFrame(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
 
-    initiatorCloseButton.addEventListener('click', function(event) {
-        event.stopPropagation();
-        chatWidget.style.display = 'none';
-    });
+                try {
+                    const response = await fetch('https://api.personal.ai/v1/message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': config.apiKey
+                        },
+                        body: JSON.stringify({
+                            Text: message,
+                            UserName: "Visitor",
+                            SourceName: "WebChat",
+                            SessionId: sessionId,
+                            DomainName: config.domainName,
+                            is_draft: false
+                        })
+                    });
 
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' && chatWidget.classList.contains('pai-chat-open')) {
-            toggleChat();
+                    const data = await response.json();
+                    
+                    if (data.ai_message) {
+                        aiMessageText.innerHTML = processMessage(data.ai_message);
+                    } else {
+                        aiMessageText.textContent = "Sorry, I couldn't generate a response at this time.";
+                    }
+
+                    if (data.SessionId) {
+                        sessionId = data.SessionId;
+                    }
+
+                    requestAnimationFrame(() => {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    });
+                } catch (error) {
+                    console.error('API Error:', error);
+                    aiMessageText.textContent = "Sorry, there was an error processing your request.";
+                }
+
+                addUserInputBubble();
+                
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    });
+                }, 100);
+            }
         }
-    });
 
-    // Initialize the chat
-    typeInitialMessage();
-};
+        function processMessage(message) {
+            const iframeRegex = /<iframe.*?src="(.*?)".*?><\/iframe>/g;
+            message = message.replace(iframeRegex, (match, src) => {
+                return `<iframe src="${src}" frameborder="0" allowfullscreen></iframe>`;
+            });
+        
+            const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)([.,;!?]?)\s*/g;
+            message = message.replace(urlRegex, (fullMatch, url, punctuation) => {
+                const fullUrl = url.startsWith('http') ? url : `http://${url}`;
+                return `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer">${url}</a>${punctuation}`;
+            });
+        
+            const paragraphs = message.split('\n\n');
+            const formattedParagraphs = paragraphs.map(paragraph => {
+                const lines = paragraph.split('\n');
+                return lines.join('<br>');
+            });
+        
+            return formattedParagraphs.map(p => `<p>${p}</p>`).join('');
+        }
+        
+        chatInitiator.addEventListener('click', toggleChat);
+        chatOverlay.addEventListener('click', toggleChat);
+        chatClose.addEventListener('click', toggleChat);
+
+        initiatorCloseButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            chatWidget.style.display = 'none';
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && chatWidget.classList.contains('pai-chat-open')) {
+                toggleChat();
+            }
+        });
+
+        typeInitialMessage();
+    };
 })();
