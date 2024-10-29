@@ -30,15 +30,16 @@ This method works for most self-hosted websites and websites on managed hosting 
    <script>
      document.addEventListener('DOMContentLoaded', function() {
        initPersonalAIChatbot({
-         apiKey: 'YOUR_API_KEY',
-         domainName: 'YOUR_DOMAIN_NAME',
-         initialMessage: "Hi, I'm your AI assistant. How can I help you today?",
-         aiAvatarUrl: 'URL_TO_AI_AVATAR',
-         userAvatarUrl: 'URL_TO_USER_AVATAR',
-         chatbotName: 'AI Assistant',
-         sendButtonColor: '#FF5733',
-         messageIconColor: '#33FF57',
-         initiatorPosition: 'bottom-right'
+         apiKey: 'user-api-key', // Enter your AI's API key
+         domainName: 'domain-name', // Enter the domain of your AI - the part that comes before '.personal.ai'
+         initialMessage: "Hi, how can I help you today?",  // Initial Message
+         aiAvatarUrl: 'ai-image', // AI image URL
+         userAvatarUrl: 'user-image', // User image URL
+         chatbotName: 'AI', // Custom name for the AI
+         sendButtonColor: '#FF5733', // Custom color for the send button
+         messageIconColor: '#33FF57', // Custom color for the message icon
+         initiatorPosition: 'top-left', // Can be 'top-left', 'top-right', 'bottom-left', or 'bottom-right'
+         initialQuestion: "What would you like to know about our products?" // This is the first message displayed by the AI in the chatbot window
        });
      });
    </script>
@@ -46,7 +47,7 @@ This method works for most self-hosted websites and websites on managed hosting 
 
 4. Replace `'path/to/embeddable-chatbot-script.js'` with the actual path where you uploaded the script on your server. This typically looks like `/js/embeddable-chatbot-script.js` or `/scripts/embeddable-chatbot-script.js`.
 
-5. Replace `'YOUR_API_KEY'`, `'YOUR_DOMAIN_NAME'`, and other placeholder values with your specific details.
+5. Replace the placeholder values with your specific details.
 
 6. Save the changes to your HTML file.
 
@@ -59,7 +60,27 @@ This method works for most self-hosted websites and websites on managed hosting 
 1. Install and activate the "Insert Headers and Footers" plugin.
 2. Go to Settings > Insert Headers and Footers.
 3. In the "Scripts in Footer" section, paste the entire content of `embeddable-chatbot-script.js`.
-4. After the pasted script, add the initialization code (see Regular Website Implementation step 3).
+4. After the pasted script, add the initialization code:
+
+   ```html
+   <script>
+     document.addEventListener('DOMContentLoaded', function() {
+       initPersonalAIChatbot({
+         apiKey: 'user-api-key', // Enter your AI's API key
+         domainName: 'domain-name', // Enter the domain of your AI - the part that comes before '.personal.ai'
+         initialMessage: "Hi, how can I help you today?",  // Initial Message
+         aiAvatarUrl: 'ai-image', // AI image URL
+         userAvatarUrl: 'user-image', // User image URL
+         chatbotName: 'AI', // Custom name for the AI
+         sendButtonColor: '#FF5733', // Custom color for the send button
+         messageIconColor: '#33FF57', // Custom color for the message icon
+         initiatorPosition: 'top-left', // Can be 'top-left', 'top-right', 'bottom-left', or 'bottom-right'
+         initialQuestion: "What would you like to know about our products?" // This is the first message displayed by the AI in the chatbot window
+       });
+     });
+   </script>
+   ```
+
 5. Replace placeholder values and save.
 
 #### Method 2: Editing Theme Files
@@ -67,7 +88,7 @@ This method works for most self-hosted websites and websites on managed hosting 
 1. Go to Appearance > Theme Editor.
 2. Select the `footer.php` file.
 3. Just before the closing `</body>` tag, paste the entire content of `embeddable-chatbot-script.js`.
-4. After the pasted script, add the initialization code.
+4. After the pasted script, add the initialization code shown above.
 5. Click "Update File" to save.
 
 #### Method 3: Using a Child Theme
@@ -80,15 +101,16 @@ This method works for most self-hosted websites and websites on managed hosting 
        wp_add_inline_script('embeddable-chatbot', '
            document.addEventListener("DOMContentLoaded", function() {
                initPersonalAIChatbot({
-                   apiKey: "YOUR_API_KEY",
-                   domainName: "YOUR_DOMAIN_NAME",
-                   initialMessage: "Hi, I\'m your AI assistant. How can I help you today?",
-                   aiAvatarUrl: "URL_TO_AI_AVATAR",
-                   userAvatarUrl: "URL_TO_USER_AVATAR",
-                   chatbotName: "AI Assistant",
-                   sendButtonColor: "#FF5733",
-                   messageIconColor: "#33FF57",
-                   initiatorPosition: "bottom-right"
+                   apiKey: "user-api-key", // Enter your AI\'s API key
+                   domainName: "domain-name", // Enter the domain of your AI - the part that comes before \'.personal.ai\'
+                   initialMessage: "Hi, how can I help you today?",  // Initial Message
+                   aiAvatarUrl: "ai-image", // AI image URL
+                   userAvatarUrl: "user-image", // User image URL
+                   chatbotName: "AI", // Custom name for the AI
+                   sendButtonColor: "#FF5733", // Custom color for the send button
+                   messageIconColor: "#33FF57", // Custom color for the message icon
+                   initiatorPosition: "top-left", // Can be "top-left", "top-right", "bottom-left", or "bottom-right"
+                   initialQuestion: "What would you like to know about our products?" // This is the first message displayed by the AI in the chatbot window
                });
            });
        ');
@@ -115,21 +137,22 @@ This method works for most self-hosted websites and websites on managed hosting 
    <script>
      document.addEventListener('DOMContentLoaded', function() {
        initPersonalAIChatbot({
-         apiKey: 'YOUR_API_KEY',
-         domainName: 'YOUR_DOMAIN_NAME',
-         initialMessage: "Hi, I'm your AI assistant. How can I help you today?",
-         aiAvatarUrl: 'URL_TO_AI_AVATAR',
-         userAvatarUrl: 'URL_TO_USER_AVATAR',
-         chatbotName: 'AI Assistant',
-         sendButtonColor: '#FF5733',
-         messageIconColor: '#33FF57',
-         initiatorPosition: 'bottom-right'
+         apiKey: 'user-api-key', // Enter your AI's API key
+         domainName: 'domain-name', // Enter the domain of your AI - the part that comes before '.personal.ai'
+         initialMessage: "Hi, how can I help you today?",  // Initial Message
+         aiAvatarUrl: 'ai-image', // AI image URL
+         userAvatarUrl: 'user-image', // User image URL
+         chatbotName: 'AI', // Custom name for the AI
+         sendButtonColor: '#FF5733', // Custom color for the send button
+         messageIconColor: '#33FF57', // Custom color for the message icon
+         initiatorPosition: 'top-left', // Can be 'top-left', 'top-right', 'bottom-left', or 'bottom-right'
+         initialQuestion: "What would you like to know about our products?" // This is the first message displayed by the AI in the chatbot window
        });
      });
    </script>
    ```
 
-4. Replace `'YOUR_API_KEY'`, `'YOUR_DOMAIN_NAME'`, and other placeholder values with your specific details.
+4. Replace placeholder values with your specific details.
 
 5. Click "Save Changes" and then "Publish" your Webflow site to apply the changes.
 
@@ -167,9 +190,10 @@ Customize the chatbot by modifying the configuration object in `initPersonalAICh
 - `aiAvatarUrl`: URL to AI's avatar image
 - `userAvatarUrl`: URL to default user avatar image
 - `chatbotName`: Name of the chatbot
-- `sendButtonColor`: Color of the send button (e.g., '#FF5733')
-- `messageIconColor`: Color of the message icon (e.g., '#33FF57')
+- `sendButtonColor`: Custom color for the send button
+- `messageIconColor`: Custom color for the message icon
 - `initiatorPosition`: Position of the chat initiator ('top-left', 'top-right', 'bottom-left', or 'bottom-right')
+- `initialQuestion`: First message displayed in the chat window
 
 ## Troubleshooting
 
