@@ -1,24 +1,29 @@
 //Customization Options - Edit
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     initPersonalAIChatbot({
-      apiKey: 'user-api-key', // Enter your AI's API key
-      domainName: 'domain-name', // Enter the domain of your AI - the part that comes before '.personal.ai'
-      initialMessage: "Hi, how can I help you today?",  // Initial Message
-      aiAvatarUrl: 'ai-image', // AI image URL
-      userAvatarUrl: 'user-image', // User image URL
-      chatbotName: 'AI', // Custom name for the AI
-      sendButtonColor: '#FF5733', // Custom color for the send button
-      messageIconColor: '#33FF57', // Custom color for the message icon
-      initiatorPosition: 'top-right', // Can be 'top-left', 'top-right', 'bottom-left', or 'bottom-right'
-      initialQuestion: 'What would you like to know about our products?' // This is the first message displayed by the AI in the chatbot window
+        apiKey: 'your-api-key',
+        domainName: 'your-domain-name',
+        initialMessage: "Hi, welcome to our website. Chat now?",
+        aiAvatarUrl: 'path/to/your/image',
+        userAvatarUrl: 'path/to/your/image',
+        chatbotName: 'AI Chatbot',
+        sendButtonColor: '#6656FF',
+        messageIconColor: '#6656FF',
+        startChatButtonColor: '#6656FF',
+        initiatorPosition: 'bottom-right',
+        initialQuestion: 'Hi how are you today?',
+        overlayColor: 'rgba(170, 160, 183, 0.50)', // Custom overlay color
+        overlayBlur: '5px', // Custom blur amount
+        requireIntake: true,  // Set to false to disable intake form
+        defaultUserEmail: 'anonymous@user.com',  // Used when requireIntake is false
+        intakeFormTitle: 'Before we start chatting',
+        intakeFormSubtitle: 'Please fill out your information to continue'
     });
-  });
+});
 </script>
 
-
-    
-//Do Not Edit    
+//Do not edit below this line unless adjustments to the positioning are needed
 <script>
 (function() {
     window.initPersonalAIChatbot = function(config) {
@@ -29,9 +34,18 @@
             aiAvatarUrl: config.aiAvatarUrl,
             userAvatarUrl: config.userAvatarUrl,
             chatbotName: config.chatbotName,
-            sendButtonColor: config.sendButtonColor,
-            messageIconColor: config.messageIconColor,
-            initiatorPosition: config.initiatorPosition,
+            sendButtonColor: config.sendButtonColor || '#6656FF',
+            messageIconColor: config.messageIconColor || '#6656FF',
+            startChatButtonColor: config.startChatButtonColor || '#6656FF',
+            userMessageColor: config.userMessageColor || '#6656FF',
+            initiatorPosition: config.initiatorPosition || 'bottom-right',
+            initialQuestion: config.initialQuestion,
+            requireIntake: config.requireIntake !== undefined ? config.requireIntake : true,
+            defaultUserEmail: config.defaultUserEmail || 'anonymous@user.com',
+            intakeFormTitle: config.intakeFormTitle || 'Before we start chatting',
+            intakeFormSubtitle: config.intakeFormSubtitle || 'Please fill out your information to continue',
+            overlayColor: config.overlayColor || 'rgba(170, 160, 183, 0.50)',
+            overlayBlur: config.overlayBlur || '5px'
         };
 
         let positionCSS;
@@ -50,6 +64,71 @@
                 positionCSS = 'bottom: 20px; right: 20px;';
                 break;
         }
+        // Add additional styles for message icon and transitions
+        const additionalStyles = `
+            .pai-chat-message-icon.expanded {
+                position: fixed !important;
+                z-index: 9999 !important;
+                cursor: pointer !important;
+                ${positionCSS}
+                width: 24px !important;
+                height: 24px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                transform: scale(2.5) !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                background: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                pointer-events: auto !important;
+            }
+
+            @media (max-width: 991px) {
+                .pai-chat-message-icon.expanded {
+                    transform: scale(2) !important;
+                    bottom: 20px !important;
+                    right: 20px !important;
+                }
+                
+                .pai-chat-window {
+                    width: 90% !important;
+                    height: 80vh !important;
+                    max-height: 80vh !important;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .pai-chat-message-icon.expanded {
+                    transform: scale(1.8) !important;
+                }
+                
+                .pai-chat-window {
+                    width: 100% !important;
+                    height: 100vh !important;
+                    max-height: 100vh !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    transform: none !important;
+                    border-radius: 0 !important;
+                }
+            }
+
+            @media (max-resolution: 150dpi) {
+                .pai-chat-window {
+                    max-width: 90vw;
+                    max-height: 90vh;
+                }
+                
+                .pai-chat-message-icon.expanded {
+                    transform: scale(2) !important;
+                }
+            }
+        `;
+
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = additionalStyles;
+        document.head.appendChild(styleSheet);
 
         const style = document.createElement('style');
         style.textContent = `
@@ -62,15 +141,23 @@
             .pai-chat-initiator {
                 position: fixed;
                 display: flex;
-                align-items: flex-end;
+                align-items: flex-start;
                 z-index: 1000;
                 cursor: pointer;
-                transition: opacity 0.3s ease;
+                opacity: 1;
+                transform: translateY(0);
+                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
                 ${positionCSS}
+            }
+
+            .pai-chat-initiator.fade-out {
+                opacity: 0;
+                transform: translateY(10px);
             }
 
             .pai-chat-avatar-wrapper {
                 margin-right: 10px;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             .pai-chat-avatar {
@@ -83,6 +170,7 @@
             .pai-chat-bubble-wrapper {
                 position: relative;
                 cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             .pai-chat-bubble {
@@ -93,6 +181,7 @@
                 box-shadow: 0 2px 10px rgba(0,0,0,0.075);
                 max-width: 300px;
                 cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             .pai-chat-text {
@@ -110,7 +199,7 @@
                 width: 24px;
                 height: 24px;
                 opacity: 0;
-                transition: opacity 0.5s ease-in-out;
+                transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
@@ -143,7 +232,7 @@
                 align-items: center;
                 justify-content: center;
                 opacity: 0;
-                transition: opacity 0.5s ease-in-out;
+                transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             .pai-chat-initiator-close.fade-in {
@@ -157,9 +246,15 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-color: rgba(170, 160, 183, 0.50);
-                backdrop-filter: blur(5px);
+                background-color: ${config.overlayColor};
+                backdrop-filter: blur(${config.overlayBlur});
                 z-index: 1001;
+                opacity: 0;
+                transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .pai-chat-open .pai-chat-overlay {
+                opacity: 1;
             }
 
             @keyframes fadeIn {
@@ -167,23 +262,12 @@
                 to { opacity: 1; }
             }
 
-            @keyframes grow {
-                from {
-                    width: 50px;
-                    height: 50px;
-                }
-                to {
-                    width: 300px;
-                    height: 500px;
-                }
-            }
-
             .pai-chat-window {
                 display: none;
                 position: fixed;
                 top: 50%;
                 left: 50%;
-                transform: translate(-50%, -50%);
+                transform: translate(-50%, -45%) scale(0.95);
                 width: 680px;
                 height: 800px;
                 background-color: transparent;
@@ -191,16 +275,14 @@
                 flex-direction: column;
                 z-index: 1002;
                 overflow: hidden;
-                transition: all 0.3s ease-in-out;
                 opacity: 0;
-                animation: fadeIn 2s ease forwards;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 max-height: 90vh;
             }
 
-            .pai-chat-open .pai-chat-window,
-            .pai-chat-open .pai-chat-overlay {
-                display: flex;
+            .pai-chat-open .pai-chat-window {
                 opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
             }
 
             .pai-chat-header {
@@ -289,8 +371,8 @@
             }
 
             .pai-chat-message-avatar {
-                width: 50px;
-                height: 50px;
+                width: 40px;
+                height: 40px;
                 border-radius: 10px 0px 10px 10px;
                 margin: 0 8px;
             }
@@ -309,6 +391,8 @@
 
             .pai-chat-message.user .pai-chat-message-content {
                 border-radius: 0px 20px 20px 20px;
+                background-color: ${config.sendButtonColor};
+                color: white;
             }
 
             .pai-chat-message-header {
@@ -322,6 +406,11 @@
                 font-size: 12px;
                 font-weight: bold;
                 color: #666;
+            }
+
+            .pai-chat-message.user .pai-chat-message-name,
+            .pai-chat-message.user .pai-chat-message-time {
+                color: rgba(255, 255, 255, 0.8);
             }
 
             .pai-chat-message-time {
@@ -347,26 +436,31 @@
                 position: relative;
                 display: flex;
                 align-items: center;
-                padding-right: 40px;
+                padding: 0 40px 0 0 !important;
                 min-height: 60px;
-                background: #fff;
-                border-top: 1px solid #EFF0F6;
-                margin-top: auto;
+                background: transparent !important;
+                border-top: none !important;
+                margin-top: 0 !important;
             }
 
             .pai-chat-input {
                 width: 100%;
                 border: none;
-                background: transparent;
+                background: transparent !important;
                 font-family: 'Inter', sans-serif;
-                font-size: 16px;
+                font-size: 14px;
                 line-height: 1.4;
-                color: #000000;
+                color: white !important;
                 outline: none;
                 resize: none;
                 overflow: hidden;
-                padding: 10px 10px 10px 0;
+                padding: 8px 0 !important;
                 min-height: 40px;
+            }
+
+            .pai-chat-input::placeholder {
+                color: rgba(255, 255, 255, 0.6) !important;
+                opacity: 1;
             }
 
             .pai-chat-send-inline {
@@ -386,12 +480,7 @@
             .pai-chat-send-inline svg {
                 width: 20px;
                 height: 20px;
-                fill: ${config.sendButtonColor};
-            }
-
-            .pai-chat-input::placeholder {
-                color: #CCCCCC;
-                opacity: 1;
+                fill: white;
             }
 
             .pai-chat-typing-indicator {
@@ -402,7 +491,7 @@
             .pai-chat-typing-indicator span {
                 height: 8px;
                 width: 8px;
-                background-color: #6656FF;
+                background-color: ${config.sendButtonColor};
                 border-radius: 50%;
                 display: inline-block;
                 margin-right: 5px;
@@ -431,8 +520,7 @@
 
             @media (max-width: 991px) {
                 .pai-chat-initiator {
-                    flex-direction: row;
-                    align-items: center;
+                    align-items: flex-start;
                 }
 
                 .pai-chat-avatar-wrapper {
@@ -443,7 +531,6 @@
                 .pai-chat-avatar {
                     width: 40px;
                     height: 40px;
-                    border-radius: 10px 0px 10px 10px;
                 }
 
                 .pai-chat-bubble {
@@ -470,27 +557,6 @@
                     height: 20px;
                     font-size: 18px;
                 }
-
-                .pai-chat-window {
-                    width: 95%;
-                    height: 90vh;
-                    max-height: 90vh;
-                    top: 5%;
-                    left: 2.5%;
-                    transform: none;
-                }
-
-                .pai-chat-messages {
-                    height: calc(100% - 200px);
-                }
-
-                .pai-chat-header {
-                    padding: 30px 10px 20px;
-                }
-
-                .pai-chat-close {
-                    top: 20px;
-                }
             }
 
             @media (max-width: 480px) {
@@ -500,29 +566,6 @@
 
                 .pai-chat-text {
                     font-size: 11px;
-                }
-
-                .pai-chat-window {
-                    width: 100%;
-                    height: 100vh;
-                    max-height: 100vh;
-                    top: 0;
-                    left: 0;
-                    border-radius: 0;
-                }
-
-                .pai-chat-messages {
-                    height: calc(100% - 220px);
-                }
-
-                .pai-chat-header {
-                    padding: 40px 10px 20px;
-                }
-
-                .pai-chat-close {
-                    font-size: 28px;
-                    right: 20px;
-                    top: 25px;
                 }
 
                 .pai-chat-input-wrapper {
@@ -539,7 +582,6 @@
             }
         `;
         document.head.appendChild(style);
-
         const chatWidgetHtml = `
             <div id="personal-ai-chat-widget" class="pai-chat-closed">
                 <div class="pai-chat-initiator">
@@ -586,8 +628,43 @@
         let sessionId = null;
         let initialMessageSent = false;
 
+        function showMessageIcon() {
+
+            if (messageIcon.parentNode) {
+                messageIcon.parentNode.removeChild(messageIcon);
+            }
+        
+
+            messageIcon.style.cssText = `
+                display: flex !important;
+                position: fixed !important;
+                z-index: 9999 !important;
+                ${positionCSS}
+                transform: scale(2.5) !important;
+                background: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                pointer-events: auto !important;
+                cursor: pointer !important;
+                width: 24px !important;
+                height: 24px !important;
+                transition: all 0.3s ease-in-out !important;
+                opacity: 0 !important;
+            `;
+        
+
+            messageIcon.classList.add('expanded');
+            document.body.appendChild(messageIcon);
+        
+
+            requestAnimationFrame(() => {
+                messageIcon.style.opacity = '1';
+            });
+        }
+
         function typeMessage(targetElement, message, callback) {
             let index = 0;
+            targetElement.textContent = '';
             function typeChar() {
                 if (index < message.length) {
                     targetElement.textContent += message.charAt(index);
@@ -608,29 +685,59 @@
         }
 
         function toggleChat() {
-            chatWidget.classList.toggle('pai-chat-open');
-            if (chatWidget.classList.contains('pai-chat-open')) {
-                chatInitiator.style.opacity = '0';
-                if (!initialMessageSent) {
-                    addAIMessage(config.initialQuestion || `Hi, I'm ${config.chatbotName}, how can I help you?`);
-                    initialMessageSent = true;
+            if (!chatWidget.classList.contains('pai-chat-open')) {
+ 
+                if (messageIcon.classList.contains('expanded')) {
+                    messageIcon.style.opacity = '0';
+                    messageIcon.style.display = 'none';
+                    messageIcon.classList.remove('expanded');
+                } else {
+                    chatInitiator.classList.add('fade-out');
+                    setTimeout(() => {
+                        chatInitiator.style.display = 'none';
+                    }, 300);
                 }
                 
-                const existingUserInput = chatMessages.querySelector('.pai-chat-message.user:last-child .pai-chat-input');
-                if (!existingUserInput) {
-                    addUserInputBubble();
-                } else {
-                    existingUserInput.focus();
-                }
-        
-                document.body.style.overflow = 'hidden';
+
+                chatWindow.style.display = 'flex';
+                chatOverlay.style.display = 'flex';
+                
+
+                chatWindow.offsetHeight;
+                
+
+                requestAnimationFrame(() => {
+                    chatWidget.classList.add('pai-chat-open');
+                    
+                    setTimeout(() => {
+                        if (!initialMessageSent) {
+                            addAIMessage(config.initialQuestion || `Hi, I'm ${config.chatbotName}, how can I help you?`);
+                            initialMessageSent = true;
+                        }
+                        
+                        const existingUserInput = chatMessages.querySelector('.pai-chat-message.user:last-child .pai-chat-input');
+                        if (!existingUserInput) {
+                            addUserInputBubble();
+                        } else {
+                            existingUserInput.focus();
+                        }
+                        document.body.style.overflow = 'hidden';
+                    }, 300);
+                });
             } else {
+
+                chatWidget.classList.remove('pai-chat-open');
                 document.body.style.overflow = '';
+                
+
                 setTimeout(() => {
-                    chatInitiator.style.opacity = '1';
-                }, 300);
+                    chatWindow.style.display = 'none';
+                    chatOverlay.style.display = 'none';
+                    showMessageIcon();
+                }, 400); 
             }
         }
+        
 
         function getCurrentTime() {
             const now = new Date();
@@ -713,18 +820,14 @@
             }
 
             setTimeout(focusInput, 100);
-            window.addEventListener('resize', () => {
-                requestAnimationFrame(() => {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                });
-            });
         }
 
         async function sendMessage(message) {
             if (message.trim()) {
                 const userMessageElement = chatMessages.querySelector('.pai-chat-message.user:last-child');
                 userMessageElement.querySelector('.pai-chat-input-wrapper').style.display = 'none';
-                userMessageElement.querySelector('.pai-chat-message-content').insertAdjacentHTML('beforeend', `<div class="pai-chat-message-text">${message}</div>`);
+                userMessageElement.querySelector('.pai-chat-message-content').insertAdjacentHTML('beforeend', 
+                    `<div class="pai-chat-message-text">${message}</div>`);
                 
                 const aiMessageElement = document.createElement('div');
                 aiMessageElement.classList.add('pai-chat-message', 'ai');
@@ -799,11 +902,6 @@
         }
 
         function processMessage(message) {
-            const iframeRegex = /<iframe.*?src="(.*?)".*?><\/iframe>/g;
-            message = message.replace(iframeRegex, (match, src) => {
-                return `<iframe src="${src}" frameborder="0" allowfullscreen></iframe>`;
-            });
-        
             const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)([.,;!?]?)\s*/g;
             message = message.replace(urlRegex, (fullMatch, url, punctuation) => {
                 const fullUrl = url.startsWith('http') ? url : `http://${url}`;
@@ -818,19 +916,56 @@
         
             return formattedParagraphs.map(p => `<p>${p}</p>`).join('');
         }
-        
-        chatInitiator.addEventListener('click', toggleChat);
-        chatOverlay.addEventListener('click', toggleChat);
-        chatClose.addEventListener('click', toggleChat);
 
-        initiatorCloseButton.addEventListener('click', function(event) {
+        // Event Listeners
+        chatInitiator.addEventListener('click', function(event) {
+            event.preventDefault();
             event.stopPropagation();
-            chatWidget.style.display = 'none';
+            toggleChat();
+        });
+        
+        messageIcon.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            toggleChat();
+        });
+        
+        chatOverlay.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            toggleChat();
+            showMessageIcon();
+        });
+        
+        chatClose.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            toggleChat();
+            showMessageIcon();
+        });
+        
+        initiatorCloseButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const initiator = chatWidget.querySelector('.pai-chat-initiator');
+            initiator.classList.add('fade-out');
+            showMessageIcon(); // Call immediately instead of in setTimeout
+        });
+
+        function isElementVisible(element) {
+            return element && (element.offsetParent !== null);
+        }
+
+        window.addEventListener('resize', function() {
+            if (messageIcon.classList.contains('expanded')) {
+                showMessageIcon();
+            }
         });
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && chatWidget.classList.contains('pai-chat-open')) {
                 toggleChat();
+                showMessageIcon();
             }
         });
 
