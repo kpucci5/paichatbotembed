@@ -14,7 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
         initiatorPosition: 'bottom-right',
         initialQuestion: 'Hi how are you today?',
         overlayColor: 'rgba(170, 160, 183, 0.50)',
-        overlayBlur: '5px'
+        overlayBlur: '5px',
+        aiMessageColor: '#FFFFFF',
+        aiMessageTextColor: '#000000',
+        userMessageColor: '#6656FF',
+        userMessageTextColor: '#FFFFFF',
+        typingIndicatorColor: '#6656FF'  // Add typing indicator color
     });
 });
 </script>
@@ -33,11 +38,16 @@ document.addEventListener('DOMContentLoaded', function() {
             sendButtonColor: config.sendButtonColor || '#6656FF',
             messageIconColor: config.messageIconColor || '#6656FF',
             startChatButtonColor: config.startChatButtonColor || '#6656FF',
-            userMessageColor: config.userMessageColor || '#6656FF',
             initiatorPosition: config.initiatorPosition || 'bottom-right',
             initialQuestion: config.initialQuestion,
             overlayColor: config.overlayColor || 'rgba(170, 160, 183, 0.50)',
-            overlayBlur: config.overlayBlur || '5px'
+            overlayBlur: config.overlayBlur || '5px',
+            // Add new color options with defaults
+            aiMessageColor: config.aiMessageColor || '#FFFFFF',
+            aiMessageTextColor: config.aiMessageTextColor || '#000000',
+            userMessageColor: config.userMessageColor || '#6656FF',
+            userMessageTextColor: config.userMessageTextColor || '#FFFFFF',
+            typingIndicatorColor: config.typingIndicatorColor || '#6656FF'
         };
 
         let positionCSS;
@@ -416,13 +426,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             .pai-chat-message.ai .pai-chat-message-content {
+                background-color: ${config.aiMessageColor};
+                color: ${config.aiMessageTextColor};
                 border-top-left-radius: 0;
             }
 
+            .pai-chat-message.ai .pai-chat-message-name {
+                color: ${config.aiMessageTextColor}80;  /* Add some transparency for the name */
+            }
+
+            .pai-chat-message.ai .pai-chat-message-time {
+                color: ${config.aiMessageTextColor}80;  /* Add some transparency for the time */
+            }
+
             .pai-chat-message.user .pai-chat-message-content {
+                background-color: ${config.userMessageColor};
+                color: ${config.userMessageTextColor};
                 border-radius: 0px 20px 20px 20px;
-                background-color: ${config.sendButtonColor};
-                color: white;
             }
 
             .pai-chat-message-header {
@@ -440,7 +460,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             .pai-chat-message.user .pai-chat-message-name,
             .pai-chat-message.user .pai-chat-message-time {
-                color: rgba(255, 255, 255, 0.8);
+                color: ${config.userMessageTextColor}80;  /* Add some transparency for header text */
+            }
+
+            .pai-chat-message.user .pai-chat-input {
+                color: ${config.userMessageTextColor};
+            }
+    
+            .pai-chat-message.user .pai-chat-input::placeholder {
+                color: ${config.userMessageTextColor}80;
+            }
+    
+            .pai-chat-message.user .pai-chat-send-inline svg {
+                fill: ${config.userMessageTextColor};
             }
 
             .pai-chat-message-time {
@@ -521,7 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .pai-chat-typing-indicator span {
                 height: 8px;
                 width: 8px;
-                background-color: ${config.sendButtonColor};
+                background-color: ${config.typingIndicatorColor};
                 border-radius: 50%;
                 display: inline-block;
                 margin-right: 5px;
