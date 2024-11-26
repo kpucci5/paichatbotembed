@@ -499,29 +499,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: flex;
                 align-items: center;
                 padding: 0 40px 0 0 !important;
-                min-height: 60px;
+                min-height: 40px;
                 background: transparent !important;
-                border-top: none !important;
+                border: none !important;
                 margin-top: 0 !important;
             }
 
             .pai-chat-input {
                 width: 100%;
-                border: none;
+                border: none !important;
                 background: transparent !important;
                 font-family: 'Inter', sans-serif;
                 font-size: 14px;
                 line-height: 1.4;
-                color: white !important;
-                outline: none;
-                resize: none;
-                overflow: hidden;
-                padding: 8px 0 !important;
-                min-height: 40px;
+                color: ${config.userMessageTextColor} !important;
+                outline: none !important;
+                resize: none !important;  /* Prevent manual resizing */
+                overflow-y: hidden !important;  /* Hide scrollbar */
+                padding: 8px 12px !important;
+                min-height: 20px;
+                box-shadow: none !important;
+                margin: 0 !important;
             }
 
             .pai-chat-input::placeholder {
-                color: rgba(255, 255, 255, 0.6) !important;
+                color: rgba(0, 0, 0, 0.4) !important;
                 opacity: 1;
             }
 
@@ -542,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .pai-chat-send-inline svg {
                 width: 20px;
                 height: 20px;
-                fill: white;
+                fill: ${config.sendButtonColor} !important;
             }
 
             .pai-chat-typing-indicator {
@@ -854,7 +856,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             textarea.addEventListener('input', function() {
                 this.style.height = 'auto';
-                const newHeight = Math.min(this.scrollHeight, 150);
+                const newHeight = Math.min(this.scrollHeight, 150);  // Max height of 150px
                 this.style.height = newHeight + 'px';
                 requestAnimationFrame(() => {
                     chatMessages.scrollTop = chatMessages.scrollHeight;
