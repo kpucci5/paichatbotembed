@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         aiMessageTextColor: '#000000',
         userMessageColor: '#6656FF',
         userMessageTextColor: '#FFFFFF',
-        typingIndicatorColor: '#6656FF'  // Add typing indicator color
+        typingIndicatorColor: '#6656FF'
     });
 });
 </script>
